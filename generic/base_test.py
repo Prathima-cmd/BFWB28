@@ -4,8 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
-
-
+from selenium.webdriver import ChromeOptions
+from selenium.webdriver import FirefoxOptions
 # driver---->local variable
 # self.driver--->global variable
 
@@ -22,7 +22,28 @@ class BaseTest:
         self.xl_path = p_file['XLPATH']
 
         # open the browser
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        browser = p_file['BROWSER']
+        print("Browser is:", browser)
+
+        use_grid=p_file['USEGRID']
+
+        if use_grid=='YES':
+            print("Using Selenium Grid")
+            grid_url=p_file['GRIDURL']
+
+            if browser=='chrome':
+                browser_option = ChromeOptions()
+            else:
+                browser_option = FirefoxOptions()
+
+            self.driver = webdriver.Remote(command_executor=grid_url, options=browser_option)
+
+        else:
+            print("Using Local System")
+            self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+
+
 
         # maximize the browser
         self.driver.maximize_window()
